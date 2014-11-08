@@ -14,15 +14,7 @@
 sid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$@');
 sid.seed(42);
 
-function isEmpty(obj) {
-        return !Object.keys(obj).length > 0;
-      }
-
-
-
 module.exports = {
-
-
 
   /**
    * `ImageController.upload()`
