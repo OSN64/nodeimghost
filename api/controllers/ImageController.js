@@ -7,7 +7,7 @@
  var fs = require('fs');
  var sid = require('shortid');
  var path = require('path')
- var UPLOAD_PATH = 'images';
+ // var UPLOAD_PATH = 'images';
 
 // Setup id generator
 // sid.characters('0123456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ');
@@ -28,12 +28,6 @@ module.exports = {
    * `ImageController.upload()`
    */
    upload: function(req, res) {
-    // var file = req.file('imageFile'),
-    //    id = sid.generate(),
-    //    fileName = id + "." + fileExtension(safeFilename(file.name)),
-    //    dirPath = UPLOAD_PATH + '/' + id,
-    //    filePath = dirPath + '/' + fileName;
-
 
     // hash file
     // res.setTimeout(0)
