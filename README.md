@@ -1,3 +1,6 @@
 # Node Image Hosting
 
-a [Sails](http://sailsjs.org) application
+A [Sails](http://sailsjs.org) application
+
+
+![ImageShowcase](https://imgur.com/SVhBhNW.png "ImageShowcase")
