@@ -40,6 +40,10 @@ module.exports.routes = {
     controller: 'image',
     action: 'upload'
   },
+  '/image/:name': {
+    controller: 'image',
+    action: 'download'
+  }
 
   /***************************************************************************
   *                                                                          *

@@ -133,10 +133,52 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
     <!-- Bootstrap Core JavaScript -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <!-- Prettify JavaScript -->
-     {{!-- <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script> --}}
-     <script src="/js/dropzone.js"></script>
+    <script src="/js/dropzone.js"></script>
     <script src="/js/dependencies/sails.io.js"></script>
     <!--SCRIPTS END-->
+    <script type="text/javascript">
+    $(function() {
+
+      Dropzone.options.imageFile = {
+        paramName: "imageFile",
+        maxFilesize: 10, // MB
+        maxFiles: 10,
+        addRemoveLinks: true,
+        // acceptedFiles: "image/jpeg, image/jpg, image/png, image/gif",
+        accept: function(file, done) {
+          done();
+        },
+         init: function() {
+          this.on("addedfile", function(file) { console.log("Added file."); });
+        },
+        sending: function(file, xhr, formData) {
+            formData.append("filesize", file.size); // Will send the filesize along with  the file as POST data.
+            console.log(file.size)
+            console.log(file)
+        },
+        success: function(err, res){
+          setTimeout(function(){
+          $('.progress .progress-bar').css('width',0 + '%');
+          }, 1000)
+          $('.progress .progress-bar').removeClass('progress-bar-success').addClass('progress-bar-warning')
+          console.log(res)
+          var imgLocation = location.protocol + '//' + location.host + '/image/' + res.files[0].filename;
+          $('#homeUplGallery').append($("<a class='img-thumbnail' href=" + imgLocation +" >")
+            .html("<img class='img-responsive' style='width: 200px; height: 200px;' src=" + imgLocation +">"))
+        },
+        uploadprogress: function(err,progress,bytesSent){
+          $('.progress .progress-bar').css(
+            'width',
+            progress + '%'
+          );
+          console.log(progress)
+          if(progress > 30)
+            setTimeout(function(){
+            $('.progress .progress-bar').removeClass('progress-bar-warning').addClass('progress-bar-success')
+            }, 500)
+        },
+      };
+    })
+</script>
   </body>
 </html>

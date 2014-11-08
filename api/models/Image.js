@@ -8,7 +8,14 @@
 module.exports = {
 
   attributes: {
-
+    name: {
+      type: 'string',
+      required: true
+    },
+    fileName: {
+      type: 'string',
+      required: true
+    }
   }
 };
 

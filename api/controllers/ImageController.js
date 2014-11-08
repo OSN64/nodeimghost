@@ -4,46 +4,22 @@
  * @description :: Server-side logic for managing images
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
- var sid = require('shortid');
  var fs = require('fs');
- var mkdirp = require('mkdirp');
-
+ var sid = require('shortid');
+ var path = require('path')
  var UPLOAD_PATH = 'images';
 
 // Setup id generator
+// sid.characters('0123456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ');
 sid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$@');
 sid.seed(42);
 
-function safeFilename(name) {
-  name = name.replace(/ /g, '-');
-  name = name.replace(/[^A-Za-z0-9-_\.]/g, '');
-  name = name.replace(/\.+/g, '.');
-  name = name.replace(/-+/g, '-');
-  name = name.replace(/_+/g, '_');
-  return name;
-}
+function isEmpty(obj) {
+        return !Object.keys(obj).length > 0;
+      }
 
-function fileMinusExt(fileName) {
-  return fileName.split('.').slice(0, -1).join('.');
-}
 
-function fileExtension(fileName) {
-  return fileName.split('.').slice(-1);
-}
 
-// Where you would do your processing, etc
-// Stubbed out for now
-function processImage(id, name, path, cb) {
-  console.log('Processing image');
-
-  cb(null, {
-    'result': 'success',
-    'id': id,
-    'name': name,
-    'path': path
-  });
-}
-function SomeReceiver (){}
 module.exports = {
 
 
@@ -51,63 +27,70 @@ module.exports = {
   /**
    * `ImageController.upload()`
    */
-   upload: function (req, res) {
-   // var file = req.file('imageFile'),
-   //    id = sid.generate(),
-   //    fileName = id + "." + fileExtension(safeFilename(file.name)),
-   //    dirPath = UPLOAD_PATH + '/' + id,
-   //    filePath = dirPath + '/' + fileName;
+   upload: function(req, res) {
+    // var file = req.file('imageFile'),
+    //    id = sid.generate(),
+    //    fileName = id + "." + fileExtension(safeFilename(file.name)),
+    //    dirPath = UPLOAD_PATH + '/' + id,
+    //    filePath = dirPath + '/' + fileName;
 
-   //  try {
-   //    mkdirp.sync(dirPath, 0755);
-   //  } catch (e) {
-   //    console.log(e);
-   //  }
 
-   //  fs.readFile(file.path, function (err, data) {
-   //    if (err) {
-   //      res.json({'error': 'could not read file'});
-   //    } else {
-   //      fs.writeFile(filePath, data, function (err) {
-   //        if (err) {
-   //          res.json({'error': 'could not write file to storage'});
-   //        } else {
-   //          processImage(id, fileName, filePath, function (err, data) {
-   //            if (err) {
-   //              res.json(err);
-   //            } else {
-   //              res.json(data);
-   //            }
-   //          });
-   //        }
-   //      })
-   //    }
-   //  });
+    // hash file
+    // res.setTimeout(0)
+    console.log("send")
+     var uploadOptions = {
+        saveAs: function(__newFileStream, cb) {
+          var id = sid.generate();
+          var ext = path.extname(__newFileStream.filename)
+          var filename = id + ext;
+          Image.create({name:id,fileName:filename}, function(err,image){
+            if (err) return console.log(err);
+            console.log(image)
+          })
+          // set a flag in db if `extention is not image and
+          // create a reaper service that deletes all the image every hour
+          cb(null, filename);
+        },
+        maxBytes: 20 * 1000 * 1000 * 100
+    }
+    req.file('imageFile').upload(uploadOptions,
+      function(err, files) {
+        if (err) return res.serverError(err);
+        //change fd to the file name
+        for (var i = 0; i < files.length; i++) {
+          files[i].filename = path.basename(files[i].fd , path.extname(files[i].fd))
+          delete files[i].fd;
+        };
+        return res.json({
+          message: files.length + ' file(s) uploaded successfully!',
+          files: files
+        });
+      })
 
-  // hash file
-  req.file('imageFile').upload(function (err, files) {
-    if (err) return res.serverError(err);
-    console.log(files)
-    return res.json({
-      message: files.length + ' file(s) uploaded successfully!',
-      files: files
-    });
-  })
+  },
 
-},
-
-/**
+  /**
    * FileController.download()
    *
    * Download a file from the server's disk.
    */
-  download: function (req, res) {
-    require('fs').createReadStream(req.param('path'))
-    .on('error', function (err) {
-      return res.serverError(err);
-    })
-    .pipe(res);
+
+   download: function(req, res) {
+    // check if extention exist then return error
+    console.log(req.param('name'))
+    Image.findOne({name:req.param('name')}, function (err,image){
+      if(err) return res.serverError()
+        console.log(image)
+      if(isEmpty(image)) return res.notFound()
+        console.log(image)
+
+      fs.createReadStream("./.tmp/uploads/" + image.fileName)
+        .on('error', function(err) {
+          return res.serverError(err);
+        })
+        .pipe(res);
+      });
+
   }
 
 };
-
