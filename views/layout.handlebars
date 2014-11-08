@@ -43,17 +43,39 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
     <link rel="stylesheet" href="/styles/importer.css">
-    <link href="/styles/custom.css" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/custom.css" >
     <!--STYLES END-->
   </head>
 
   <body>
 
-  <div class="box">
-    <div class="wrapper">
-        <!-- Page Content -->
-      {{{body}}}
-    </div>
+  <div class="box container">
+     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">Image Host</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <form class="navbar-form navbar-right" role="form">
+            <div class="form-group">
+              <input type="text" placeholder="Email" class="form-control">
+            </div>
+            <div class="form-group">
+              <input type="password" placeholder="Password" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-success">Sign in</button>
+          </form>
+        </div><!--/.navbar-collapse -->
+      </div>
+    </nav>
+    <!-- Page Content -->
+    {{{body}}}
   </div>
 
 
@@ -112,7 +134,8 @@
     <!-- Bootstrap Core JavaScript -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <!-- Prettify JavaScript -->
-    <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+     {{!-- <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script> --}}
+     <script src="/js/dropzone.js"></script>
     <script src="/js/dependencies/sails.io.js"></script>
     <!--SCRIPTS END-->
   </body>

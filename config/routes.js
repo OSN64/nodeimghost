@@ -36,6 +36,10 @@ module.exports.routes = {
     controller: 'home',
     action: 'index'
   },
+  'post /image/upload': {
+    controller: 'image',
+    action: 'upload'
+  },
 
   /***************************************************************************
   *                                                                          *

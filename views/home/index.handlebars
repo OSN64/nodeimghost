@@ -1,1 +1,16 @@
 {{!-- {{> hNav}} --}}
+<div class="jumbotron">
+  <div class="container">
+    <h1>Image Host/Upload</h1>
+    <p>This site is allows users to upload images and is uses node as backbone</p>
+    <p>
+      <a class="btn btn-primary btn-lg">Learn more</a>
+    </p>
+  </div>
+  <h2>Upload Images Here</h2>
+  <form action="/image/upload" id="uploadForm" enctype="multipart/form-data" method="post">
+    <input type="file" name="imageFile"/>
+
+    <button type="submit" class="btn btn-primary">Upload</button>
+  </form>
+</div>
