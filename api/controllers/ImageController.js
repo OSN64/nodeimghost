@@ -21,7 +21,18 @@ function isEmpty(obj) {
 
 module.exports = {
 
-
+  index: function(req,res){
+    Image.find({}, function(err, images) {
+      if (err) {
+        console.log(err)
+      }
+      // console.log(images)
+      return res.view({
+        title:"Menu Items",
+        images:images,
+      });
+    });
+  },
 
   /**
    * `ImageController.upload()`
@@ -36,9 +47,10 @@ module.exports = {
           var id = sid.generate();
           var ext = path.extname(__newFileStream.filename)
           var filename = id + ext;
+          // console.log(__newFileStream)
           Image.create({name:id,fileName:filename}, function(err,image){
             if (err) return console.log(err);
-            console.log(image)
+            // console.log(image)
           })
           // set a flag in db if `extention is not image and
           // create a reaper service that deletes all the image every hour
@@ -58,7 +70,9 @@ module.exports = {
           message: files.length + ' file(s) uploaded successfully!',
           files: files
         });
-      })
+      }).on('progress', function(event) {
+        // console.log(event)
+      });
 
   },
 
@@ -70,10 +84,8 @@ module.exports = {
 
    download: function(req, res) {
     // check if extention exist then return error
-    console.log(req.param('name'))
     Image.findOne({name:req.param('name')}, function (err,image){
       if(err) return res.serverError()
-        console.log(image)
       if(isEmpty(image)) return res.notFound()
         console.log(image)
 

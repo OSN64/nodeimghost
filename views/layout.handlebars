@@ -35,7 +35,9 @@
 
     <!--STYLES-->
     <link href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/helpers/jquery.fancybox-thumbs.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/helpers/jquery.fancybox-buttons.css">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -134,6 +136,11 @@
     <!-- Bootstrap Core JavaScript -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <script src="/js/dropzone.js"></script>
+
+     <!-- Fancy box-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.pack.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/helpers/jquery.fancybox-thumbs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/helpers/jquery.fancybox-buttons.js"></script>
     <script src="/js/dependencies/sails.io.js"></script>
     <!--SCRIPTS END-->
     <script type="text/javascript">
@@ -142,9 +149,9 @@
       Dropzone.options.imageFile = {
         paramName: "imageFile",
         maxFilesize: 10, // MB
-        maxFiles: 10,
+        // maxFiles: 10,
         addRemoveLinks: true,
-        // acceptedFiles: "image/jpeg, image/jpg, image/png, image/gif",
+        acceptedFiles: "image/jpeg, image/jpg, image/png, image/gif",
         accept: function(file, done) {
           done();
         },
@@ -179,6 +186,26 @@
         },
       };
     })
+</script>
+<script>
+   $(document).ready(function() {
+            $('.fancybox-thumbs').fancybox({
+            prevEffect : 'none',
+            nextEffect : 'none',
+
+            closeBtn  : true,
+            arrows    : true,
+            nextClick : true,
+            autoSize  : true,
+
+            helpers : {
+              thumbs : {
+                width  : 50,
+                height : 50
+              }
+            }
+          });
+      });
 </script>
   </body>
 </html>
