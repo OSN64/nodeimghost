@@ -15,6 +15,10 @@ module.exports = {
     fileName: {
       type: 'string',
       required: true
+    },
+    extension: {
+      type: 'string',
+      required: true
     }
   }
 };

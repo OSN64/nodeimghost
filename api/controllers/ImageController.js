@@ -14,11 +14,6 @@
 sid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$@');
 sid.seed(42);
 
-function isEmpty(obj) {
-        return !Object.keys(obj).length > 0;
-      }
-
-
 module.exports = {
 
   index: function(req,res){
@@ -48,7 +43,7 @@ module.exports = {
           var ext = path.extname(__newFileStream.filename)
           var filename = id + ext;
           // console.log(__newFileStream)
-          Image.create({name:id,fileName:filename}, function(err,image){
+          Image.create({name:id,fileName:filename,extension:ext.substring(1)}, function(err,image){
             if (err) return console.log(err);
             // console.log(image)
           })
@@ -86,9 +81,14 @@ module.exports = {
     // check if extention exist then return error
     Image.findOne({name:req.param('name')}, function (err,image){
       if(err) return res.serverError()
-      if(isEmpty(image)) return res.notFound()
         console.log(image)
 
+      if(!image) return res.notFound()
+      if(!image.extension =="jpeg" |
+         !image.extension == "jpg" |
+         !image.extension == "gif" |
+         !image.extension == "png")
+          return res.notFound()
       fs.createReadStream("./.tmp/uploads/" + image.fileName)
         .on('error', function(err) {
           return res.serverError(err);
