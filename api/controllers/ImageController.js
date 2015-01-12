@@ -27,7 +27,6 @@ function chkMime(filePath, err) {
     if (err) return console.log(err);
   })
   var dir = path.dirname(filePath)
-
 }
 module.exports = {
 
