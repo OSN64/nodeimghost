@@ -14,6 +14,7 @@ var path = require('path');
 sid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$@');
 sid.seed(42);
 
+
 function chkMime(filePath, err) {
   console.log(filePath)
   var filename = path.basename(filePath);
