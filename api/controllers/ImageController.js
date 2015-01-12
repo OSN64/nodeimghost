@@ -7,6 +7,7 @@
 var fs = require('fs');
 var sid = require('shortid');
 var path = require('path');
+
 // var UPLOAD_PATH = 'images';
 
 // Setup id generator
