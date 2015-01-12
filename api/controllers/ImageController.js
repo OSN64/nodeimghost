@@ -4,32 +4,13 @@
  * @description :: Server-side logic for managing images
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
-var fs = require('fs');
-var sid = require('shortid');
-var path = require('path');
 
-// var UPLOAD_PATH = 'images';
+var path = require('path'),
+  sid = require('shortid');
 
 // Setup id generator
-// sid.characters('0123456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ');
-sid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$@');
+// sid.characters('0123456789abcdefgh&jk^mn(pqrstuvwxyzABCDEFGH)JK-MN+PQRSTUVWXYZ=*');
 sid.seed(42);
-
-
-function chkMime(filePath, err) {
-  console.log(filePath)
-  var filename = path.basename(filePath);
-  var ext = path.extname(filePath);
-  var id = path.basename(filePath,ext);
-  Image.create({
-    name: id,
-    fileName: filename,
-    extension: ext
-  }, function(err, image) {
-    if (err) return console.log(err);
-  })
-  var dir = path.dirname(filePath)
-}
 
 module.exports = {
 
@@ -50,71 +31,87 @@ module.exports = {
    * `ImageController.upload()`
    */
   upload: function(req, res) {
+    // console.log(req.params.all())
+    // console.log(req)
+    var results = [],
+      streamOptions = {
+        dirname: "uploads/", // add a configurable path
+        thumb: {
+          size: '400X400',
+          quality: 90
+        },
+        saveAs: function(file) {
+          var filename = file.filename,
+            newName = sid.generate() + path.extname(filename);
+          return newName;
+        },
+        completed: function(fileData, next) {
+          Image.create(fileData).exec(function(err, savedFile) {
+            if (err) {
+              next(err);
+            } else {
+              results.push({
+                id: savedFile.id,
+                name: savedFile.name,
+                path: savedFile.path,
+                thumbpath: savedFile.thumbpath,
+              });
+              next();
+            }
+          });
+        }
+      };
 
-    // hash file
-    // res.setTimeout(0)
-    // console.log("send")
-    var uploadOptions = {
-      saveAs: function(__newFileStream, cb) {
-        var id = sid.generate();
-        var ext = path.extname(__newFileStream.filename)
-        var filename = id + ext;
-        // console.log(__newFileStream)
-
-        // set a flag in db if `extention is not image and
-        // create a reaper service that deletes all the image every hour
-        cb(null, filename);
-      },
-      maxBytes: 20 * 1000 * 1000 * 100,
-      dirname: "tmp/"
-    }
-    req.file('imageFile').upload(uploadOptions,
+    req.file('imageFile').upload(Uploader.documentReceiverStream(streamOptions),
       function(err, files) {
         if (err) return res.serverError(err);
-        //change fd to the file name
-
-        for (var i = 0; i < files.length; i++) {
-          chkMime(files[i].fd, err);
-          files[i].filename = path.basename(files[i].fd, path.extname(files[i].fd))
-          delete files[i].fd;
-        };
-        return res.json({
+        // console.log(files)
+        res.json({
           message: files.length + ' file(s) uploaded successfully!',
-          files: files
+          files: results
         });
-      }).on('progress', function(event) {
-      // console.log(event)
-    });
-
+      }
+    );
   },
-
   /**
-   * FileController.download()
+   * ImageController.show()
    *
-   * Download a file from the server's disk.
+   * Display a file from the server's disk.
    */
 
-  download: function(req, res) {
-    // check if extention exist then return error
+  show: function(req, res) {
+    var name = req.param('name');
     Image.findOne({
-      name: req.param('name')
+      name: name
     }, function(err, image) {
-      if (err) return res.serverError()
-      console.log(image)
+      if (err) return res.serverError(err);
+      if (_.isEmpty(image)) return res.notFound(); // no image found
 
-      if (!image) return res.notFound()
-      if (!image.extension == "jpeg" ||
-        !image.extension == "jpg" ||
-        !image.extension == "gif" ||
-        !image.extension == "png")
-        return res.notFound()
-      fs.createReadStream("./.tmp/uploads/" + image.fileName)
-        .on('error', function(err) {
-          return res.serverError(err);
-        })
-        .pipe(res);
+      // console.log(image)
+      return res.view({
+        title: "image",
+        image: image,
+      });
     });
-
+  },
+  /**
+   * ImageController.destroy()
+   *
+   * Removes a file from the server's disk.
+   */
+  destroy: function(req, res) {
+    console.log("destroy")
+    // if (req.isSocket) {
+    //   var params = req.params.all();
+    //   Image.destroy({
+    //     id: params.id
+    //   }, function(err, image) {
+    //     if (err) return res.json(err)
+    //     if (_.isEmpty(image)) return res.serverError();
+    //     // fs.unlinkSync('./.tmp/uploads/' + image[0].fileName); // delete the image
+    //     return res.json(image);
+    //   });
+    // }
   }
 
 };

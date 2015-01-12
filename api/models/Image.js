@@ -12,13 +12,25 @@ module.exports = {
       type: 'string',
       required: true
     },
-    fileName: {
-      type: 'string',
-      required: true
-    },
+    // fileName: {
+    //   type: 'string',
+    //   required: true
+    // },
     extension: {
       type: 'string',
       required: true
+    },
+    size: {
+      type: 'integer',
+      required: true
+    },
+    path: {
+      type: 'string',
+      required: true
+    },
+    thumbpath: {
+      type: 'string'
+      // required: true
     }
   }
 };

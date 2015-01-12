@@ -177,9 +177,10 @@
             }, 1000)
             $('.progress .progress-bar').removeClass('progress-bar-success').addClass('progress-bar-warning')
             console.log(res)
-            var imgLocation = location.protocol + '//' + location.host + '/image/' + res.files[0].filename;
-            $('#homeUplGallery').append($("<a class='img-thumbnail' href=" + imgLocation +" >")
-              .html("<img class='img-responsive' style='width: 200px; height: 200px;' src=" + imgLocation +">"))
+            var imgpath = location.protocol + '//' + location.host + '/'+ res.files[0].name;
+            var thumbLocation = location.protocol + '//' + location.host + '/'+ res.files[0].thumbpath;
+            $('#homeUplGallery').append($("<a class='img-thumbnail' href=" + imgpath +" >")
+              .html("<img class='img-responsive' style='width: 200px; height: 200px;' src='" + thumbLocation +"' >"))
           },
           uploadprogress: function(err,progress,bytesSent){
             $('.progress .progress-bar').css(
