@@ -15,7 +15,7 @@ sid.seed(42);
 module.exports = {
 
   index: function(req, res) {
-    Image.find({}, function(err, images) {
+    Image.find({}).limit(10).exec(function findCB(err, images) {
       if (err) {
         console.log(err)
       }
@@ -101,17 +101,17 @@ module.exports = {
    */
   destroy: function(req, res) {
     console.log("destroy")
-    // if (req.isSocket) {
-    //   var params = req.params.all();
-    //   Image.destroy({
-    //     id: params.id
-    //   }, function(err, image) {
-    //     if (err) return res.json(err)
-    //     if (_.isEmpty(image)) return res.serverError();
-    //     // fs.unlinkSync('./.tmp/uploads/' + image[0].fileName); // delete the image
-    //     return res.json(image);
-    //   });
-    // }
+      // if (req.isSocket) {
+      //   var params = req.params.all();
+      //   Image.destroy({
+      //     id: params.id
+      //   }, function(err, image) {
+      //     if (err) return res.json(err)
+      //     if (_.isEmpty(image)) return res.serverError();
+      //     // fs.unlinkSync('./.tmp/uploads/' + image[0].fileName); // delete the image
+      //     return res.json(image);
+      //   });
+      // }
   }
 
 };
