@@ -40,9 +40,17 @@ module.exports.routes = {
     controller: 'image',
     action: 'upload'
   },
-  '/image': {
+  'get /image': {
     controller: 'image',
     action: 'index'
+  },
+  'post /image': {
+    controller: 'image',
+    action: 'update'
+  },
+  '/delete/:delAccCode': {
+    controller: 'image',
+    action: 'destroy'
   },
 
 

@@ -3,8 +3,53 @@
     <h3 class="panel-title">Image</h3>
   </div>
   <div class="panel-body">
-  <a class="img-thumbnail {{!-- fancybox-thumbs --}}" rel="group" data-fancybox-group="thumb" href="/{{image.path}}">
-      <img class="img-responsive" style="width: 500px; height: 500px;" src="{{image.path}}">
-    </a>
-</div>
+    <div class="col-md-8">
+      <a class="img-thumbnail {{!-- fancybox-thumbs --}}" rel="group" data-fancybox-group="thumb" href="/{{image.path}}">
+        <img class="img-responsive" style="width: 500px; height: 500px;" src="{{image.path}}">
+      </a>
+    </div>
+    <div class="col-md-4">
+      {{#if owner}}
+      <form action="/image" method="POST" class="form-horizontal" role="form">
+          <div class="form-group">
+            <legend>Add / Update Title or description</legend>
+          </div>
+          <div class="form-group">
+            <label for="title" class="col-sm-2 control-label">Title:</label>
+            <div class="col-sm-10">
+              <input type="text" name="title" id="title" class="form-control" value="{{image.title}}">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="desc" class="col-sm-2 control-label">Description:</label>
+            <div class="col-sm-10">
+              <textarea name="description" id= "desc"class="form-control"  cols="20" rows="2">{{image.description}}</textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2">
+              <input type="hidden" name="image" class="form-control" value="{{image.name}}">
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+          </div>
+      </form>
+      {{image.description}}
+      <h3>Image Link</h3>
+      <input class="form-control imgLinks" readonly="" value="{{sails.getBaseurl}}/{{image.name}}" type="text" >
+
+      <h3>Original Image Link</h3>
+      <input class="form-control imgLinks" readonly="" value="{{sails.getBaseurl}}/{{image.path}}" type="text" >
+
+      <h3>Markdown Link</h3>
+      <input class="form-control imgLinks" readonly="" value="[img]({{sails.getBaseurl}}/{{image.name}}{{image.extension}} )" type="text" >
+
+      <h3>Delete link</h3>
+      <input class="form-control warning imgLinks" readonly="" value="{{sails.getBaseurl}}/delete/{{image.delAccCode}}" type="text" >
+      {{else}}
+
+      {{/if}}
+    </div>
+
+  </div>
 </div>

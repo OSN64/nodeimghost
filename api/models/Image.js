@@ -10,12 +10,9 @@ module.exports = {
   attributes: {
     name: {
       type: 'string',
-      required: true
+      required: true,
+      unique: true
     },
-    // fileName: {
-    //   type: 'string',
-    //   required: true
-    // },
     extension: {
       type: 'string',
       required: true
@@ -31,7 +28,15 @@ module.exports = {
     thumbpath: {
       type: 'string'
       // required: true
+    },
+    owner:{
+      model:'user'
+    },
+    delAccCode: {
+      type:'string',
+      required: true
     }
+    // should probably store dimentions
   }
 };
 

@@ -6,7 +6,9 @@
  */
 
 var path = require('path'),
-  sid = require('shortid');
+  sid = require('shortid')
+uuid = require('node-uuid')
+fs = require('fs');
 
 // Setup id generator
 // sid.characters('0123456789abcdefgh&jk^mn(pqrstuvwxyzABCDEFGH)JK-MN+PQRSTUVWXYZ=*');
@@ -46,16 +48,23 @@ module.exports = {
           return newName;
         },
         completed: function(fileData, next) {
-          Image.create(fileData).exec(function(err, savedFile) {
+          fileData.owner = (_.isEmpty(req.user) ? null : req.user.id); // give owner to image
+          // create delete access code
+          fileData.delAccCode = uuid.v4();
+
+          Image.create(fileData).exec(function createCB(err, image) {
             if (err) {
               next(err);
             } else {
               results.push({
-                id: savedFile.id,
-                name: savedFile.name,
-                path: savedFile.path,
-                thumbpath: savedFile.thumbpath,
+                id: image.id,
+                name: image.name,
+                path: image.path,
+                thumbpath: image.thumbpath,
+                delAccCode: image.delAccCode
               });
+              if (_.isEmpty(req.session.images)) req.session.images = [];
+              req.session.images.push({name:image.name});
               next();
             }
           });
@@ -83,14 +92,18 @@ module.exports = {
     var name = req.param('name');
     Image.findOne({
       name: name
-    }, function(err, image) {
+    }).populateAll().exec(function findOneCB(err, image) {
       if (err) return res.serverError(err);
       if (_.isEmpty(image)) return res.notFound(); // no image found
+      // console.log(req.user)
+      // set owner to true if any images in session is an image
+      var owner = Util.imagesContainsName(req.session.images,image.name);
 
-      // console.log(image)
+        // console.log(image)
       return res.view({
         title: "image",
         image: image,
+        owner: owner
       });
     });
   },
@@ -100,18 +113,45 @@ module.exports = {
    * Removes a file from the server's disk.
    */
   destroy: function(req, res) {
-    console.log("destroy")
-      // if (req.isSocket) {
-      //   var params = req.params.all();
-      //   Image.destroy({
-      //     id: params.id
-      //   }, function(err, image) {
-      //     if (err) return res.json(err)
-      //     if (_.isEmpty(image)) return res.serverError();
-      //     // fs.unlinkSync('./.tmp/uploads/' + image[0].fileName); // delete the image
-      //     return res.json(image);
-      //   });
-      // }
+    // check if user is sure
+    var delAccCode = req.param('delAccCode');
+    Image.destroy({
+      delAccCode: delAccCode
+    }, function(err, image) {
+      if (err) return res.json(err)
+      if (_.isEmpty(image)) return res.serverError(); // no delete link found
+      fs.unlinkSync(sails.config.appPath + "/assets/" + image[0].path); // delete the image
+      fs.unlinkSync(sails.config.appPath + "/assets/" + image[0].thumbpath); // delete the thumb
+
+      console.log(image)
+      return res.redirect("/")
+    });
+  },
+  /**
+   * ImageController.update()
+   *
+   * update image details in the db.
+   */
+  update: function(req, res) {
+    var owner = false;
+    if (!_.isEmpty(req.session.images))
+      owner = (_.find(req.session.images, function(inImage) {
+        return inImage.name == req.param('image');
+      }) ? true : false); // set owner to true if any images in session is an image
+
+    if (!owner) res.notFound();
+    // console.log(owner)
+    Image.update({
+      name: req.param('image')
+    }, {
+      title: req.param('title'),
+      description: req.param('description')
+    }, function updateCB(err, images) {
+      if (err) return res.serverError(err);
+      if (_.isEmpty(images)) return res.notFound(); // no image found
+
+      return res.redirect('back')
+    })
   }
 
 };
