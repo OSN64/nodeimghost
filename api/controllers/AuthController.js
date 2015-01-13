@@ -189,7 +189,7 @@
         // Upon successful login, send the user to the homepage were req.user
         // will available.
         req.session.authenticated = true;
-          res.redirect('back');
+          res.redirect('/images');
       });
     });
   },

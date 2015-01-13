@@ -63,8 +63,12 @@ module.exports = {
                 thumbpath: image.thumbpath,
                 delAccCode: image.delAccCode
               });
-              if (_.isEmpty(req.session.images)) req.session.images = [];
-              req.session.images.push({name:image.name});
+              if (!req.user) { // if your a guest  store images in sessions
+                if (_.isEmpty(req.session.images)) req.session.image = [];
+                req.session.images.push({
+                  name: image.name
+                });
+              }
               next();
             }
           });
@@ -97,8 +101,9 @@ module.exports = {
       if (_.isEmpty(image)) return res.notFound(); // no image found
       // console.log(req.user)
       // set owner to true if any images in session is an image
-      var owner = Util.imagesContainsName(req.session.images,image.name);
-
+      var owner = Util.imagesContainsName(req.session.images, image.name);
+      if (req.user && !owner)
+        owner = (req.user.id == (image.owner ? image.owner.id : false) ? true : false)
         // console.log(image)
       return res.view({
         title: "image",
@@ -133,24 +138,28 @@ module.exports = {
    * update image details in the db.
    */
   update: function(req, res) {
-    var owner = false;
-    if (!_.isEmpty(req.session.images))
-      owner = (_.find(req.session.images, function(inImage) {
-        return inImage.name == req.param('image');
-      }) ? true : false); // set owner to true if any images in session is an image
-
-    if (!owner) res.notFound();
-    // console.log(owner)
-    Image.update({
+    var owner = Util.imagesContainsName(req.session.images, req.param('image'));
+    Image.findOne({
       name: req.param('image')
-    }, {
-      title: req.param('title'),
-      description: req.param('description')
-    }, function updateCB(err, images) {
+    }).exec(function findOneCB(err, image) {
       if (err) return res.serverError(err);
-      if (_.isEmpty(images)) return res.notFound(); // no image found
+      if (_.isEmpty(image)) return res.notFound(); // no image found
 
-      return res.redirect('back')
+      if (req.user && !owner)
+        owner = (req.user.id == (image.owner ? image.owner.id : false) ? true : false)
+
+      if (!owner) res.notFound();
+      Image.update({
+        name: req.param('image')
+      }, {
+        title: req.param('title'),
+        description: req.param('description')
+      }, function updateCB(err, images) {
+        if (err) return res.serverError(err);
+        if (_.isEmpty(images)) return res.notFound(); // no image found
+
+        return res.redirect('back')
+      })
     })
   }
 

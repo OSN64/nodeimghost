@@ -34,7 +34,6 @@
             </div>
           </div>
       </form>
-      {{image.description}}
       <h3>Image Link</h3>
       <input class="form-control imgLinks" readonly="" value="{{sails.getBaseurl}}/{{image.name}}" type="text" >
 
@@ -42,12 +41,12 @@
       <input class="form-control imgLinks" readonly="" value="{{sails.getBaseurl}}/{{image.path}}" type="text" >
 
       <h3>Markdown Link</h3>
-      <input class="form-control imgLinks" readonly="" value="[img]({{sails.getBaseurl}}/{{image.name}}{{image.extension}} )" type="text" >
+      <input class="form-control imgLinks" readonly="" value="[img]({{sails.getBaseurl}}/{{image.name}}{{image.extension}})" type="text" >
 
       <h3>Delete link</h3>
       <input class="form-control warning imgLinks" readonly="" value="{{sails.getBaseurl}}/delete/{{image.delAccCode}}" type="text" >
       {{else}}
-
+        other images
       {{/if}}
     </div>
 
